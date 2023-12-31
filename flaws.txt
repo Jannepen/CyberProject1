@@ -52,7 +52,7 @@ If the user goes to the home page without logging in, he will see the a view tha
 On this page the unauthorized user can for example see all the users that funds could be sent to.
 Fixing this issue is fairly simple. All we need to make sure is that the home page is only accessible to users that have logged in.
 To do this have to make sure that instead of showing the unlogged user the page we instead redirect the user to the login page. This is easily done with the help of djangos’ authentication framework like this:
-Github-link
+https://github.com/Jannepen/CyberProject1/blob/main/bank_application/src/pages/views.py#L43
 
 FLAW 5: Cross-site request forgery
 https://github.com/Jannepen/CyberProject1/blob/main/bank_application/src/pages/views.py#L12
