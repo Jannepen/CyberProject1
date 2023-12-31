@@ -11,4 +11,4 @@ The app includes examples of flaws regarding the following:
  - Broken access control
  - Cross-site Request Forgery
 
-More information found in 
+More information found in [flaws.txt](flaws.txt)
