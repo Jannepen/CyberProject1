@@ -7,9 +7,11 @@ from django.db import transaction
 from .models import Account
  
  
+#Flaw: Cross-site Requestr Forgery
+#Fix: comment line below and uncomment csrf_token in index.html
+@csrf_exempt
 @login_required
 @transaction.atomic
-@csrf_exempt
 def transferView(request):
 	
 	if request.method == 'POST':
