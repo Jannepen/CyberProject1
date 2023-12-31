@@ -13,12 +13,21 @@ def transferView(request):
 	
 	if request.method == 'POST':
 		user = request.user
-		to = User.objects.get(username=request.POST.get('to'))
+
+		#Flaw: allows injection
+		to_username = request.POST.get('to')
+		query = f"SELECT * FROM auth_user WHERE username = '{to_username}'"
+		to = User.objects.raw(query)[0]
+
+		#Fix for injection: comment 3 lines above an uncomment line below to fix
+		#to = User.objects.get(username=request.POST.get('to'))
+
 		amount = int(request.POST.get('amount'))
- 
+
 		if amount >= 0 and user.account.balance >= amount:
 			user.account.balance -= amount
 			to.account.balance += amount
+			
  
 		user.account.save()
 		to.account.save()
