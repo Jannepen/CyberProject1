@@ -9,6 +9,7 @@ from .models import Account
  
 @login_required
 @transaction.atomic
+@csrf_exempt
 def transferView(request):
 	
 	if request.method == 'POST':
@@ -34,9 +35,10 @@ def transferView(request):
 	
 	return redirect('/')
  
- 
- 
-@login_required
+
+#Flaw: Broken access control
+#Fix: uncomment line below
+#@login_required
 def homePageView(request):
 	accounts = Account.objects.exclude(user_id=request.user.id)
 	return render(request, 'pages/index.html', {'accounts': accounts})
