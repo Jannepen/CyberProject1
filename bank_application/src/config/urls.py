@@ -23,10 +23,10 @@ urlpatterns = [
 	path('login/', LoginView.as_view(template_name='pages/login.html')),
 
     #Flaw: Broken authentication
-    #path('logout/', fakeLogoutView, name='logout'),
+    path('logout/', fakeLogoutView, name='logout'),
 
     #Fix for broken authentication: comment line above and uncomment line below
-	path('logout/', LogoutView.as_view(next_page='/')),
+	#path('logout/', LogoutView.as_view(next_page='/')),
 
 	path('', include('src.pages.urls'))
 ]
