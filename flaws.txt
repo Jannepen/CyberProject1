@@ -1,0 +1,65 @@
+Link:
+https://github.com/Jannepen/CyberProject1
+
+The app used to demonstrate these flaws is a modified version of the bank application used in the exercises in Securing Software.
+The app should work if django is installed. To start a server use the command: python manage.py runserver.
+The flaws are taken from the 2017 OSWP top ten, however they appear in both lists. Except CSRF which is in neither list but allowed as a flaw.
+
+FLAW 1: Broken authentication
+https://github.com/Jannepen/CyberProject1/blob/main/bank_application/src/config/urls.py#L26
+
+Broken authentication can mean a lot of things, but usually it means that due to a vulnerability a user can access services or information that he should not have access to. 
+In this app there is a flaw regarding the logging out feature, which demonstrates what broken authentication may look like.
+When the user tries to log out using the log out button, he gets notified with a text that tells the user that he has successfully logged out.
+In reality however the session is not invalidated properly and the user remains logged in. This flaw can be very dangerous if for example the user is using a public computer, and the person that uses the computer after him has access to the account after unsuccessful log out.
+For logging out the app uses a function that simply notifies the user of logging out, but lacks the actual functionality to properly invalidate the session.
+To fix this we can instead use djangos’ built in functionality for logging out to make sure that the session is terminated properly.
+Fix in code: 
+https://github.com/Jannepen/CyberProject1/blob/main/bank_application/src/config/urls.py#L29
+
+FLAW 2: Injection
+https://github.com/Jannepen/CyberProject1/blob/main/bank_application/src/pages/views.py#L23
+
+Injection is a type of attack that can be used to things like data manipulation.
+A typical possibility for injection is when input provided by user is not validated properly.
+This app has a vulnerability that allows attacker to use SQL injection.
+When moving funds from one account to another account, the app uses a query to search the destination account with a username provided by the user.
+In this case the data provided by the user is not properly validated. This allows the attacker to make SQL queries, which could for example remove or modify the data in the database.
+Even though the input for the field that lacks the validation is select type in the frontend, it  does not prevent the injection threat, as the attacker can manipulate the frontend as he pleases.
+The validation must be done in the backend.
+To fix the flaw, we avoid having any input provided by the user in the query we are making. This way it is not possible for the attacker to make unauthorized SQL queries to the database.
+Fix in code:
+https://github.com/Jannepen/CyberProject1/blob/main/bank_application/src/pages/views.py#L26
+
+
+FLAW 3: Security misconfiguration
+https://github.com/Jannepen/CyberProject1/blob/main/bank_application/src/config/settings.py#L28
+
+The app has a problem regarding error handling. The django configuration that has been used in developing the app has a mode regarding debugging which is on by default.
+This mode gives a lot of information to the user when an error occurs, some of which could be sensitive information that the user should not have access to.
+To fix this issue we can simply disable the debugging mode so that the user doesn’t get all the information about the environment when an error occurs.
+A small note about the fix regarding this issue; while it is sufficient to solve the specific issue, the fix does not provide proper error handling.
+It only ensures that the user can’t exploit information that he shouldn’t have access to.
+Fix in code:
+https://github.com/Jannepen/CyberProject1/blob/main/bank_application/src/config/settings.py#L32
+
+FLAW 4: Broken access control
+https://github.com/Jannepen/CyberProject1/blob/main/bank_application/src/pages/views.py#L43
+
+Access control is an important part of an application. The app should make sure that users can access only the pages and services that they have the rights to.
+This app has a small flaw that allows users to access unauthorized information without logging in.
+If the user goes to the home page without logging in, he will see the a view that only logged in users are supposed to see.
+On this page the unauthorized user can for example see all the users that funds could be sent to.
+Fixing this issue is fairly simple. All we need to make sure is that the home page is only accessible to users that have logged in.
+To do this have to make sure that instead of showing the unlogged user the page we instead redirect the user to the login page. This is easily done with the help of djangos’ authentication framework like this:
+Github-link
+
+FLAW 5: Cross-site request forgery
+https://github.com/Jannepen/CyberProject1/blob/main/bank_application/src/pages/views.py#L12
+
+As django provides csrf protection within its framework, a dangerous line has been left in the code disabling this protection.
+This could allow an attacker to make requests to the web application from other sites. A proper way to make sure this is not possible is to ensure that the app uses csrf-tokens.
+To fix this flaw we can remove the csrf_exempt decorator and uncomment the line that creates a csrf token in the index.html file here:
+https://github.com/Jannepen/CyberProject1/blob/main/bank_application/src/pages/templates/pages/index.html#L27
+
+If you want to try out the application, the users created in the original template exists within the application. Those are bob:squarepants, alice:redqueen and patrick:asteroid.
